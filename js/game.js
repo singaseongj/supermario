@@ -136,12 +136,32 @@ var level;
 var sounds;
 var music;
 
+function createAudioWithFallback(options) {
+  var probe = document.createElement('audio');
+  for (var i = 0; i < options.length; i++) {
+    var option = options[i];
+    if (!option.src) {
+      continue;
+    }
+    if (!option.type || probe.canPlayType(option.type)) {
+      return new Audio(option.src);
+    }
+  }
+  return new Audio();
+}
+
 //initialize
 var lastTime;
 function init() {
   music = {
-    overworld: new Audio('sounds/aboveground_bgm.ogg'),
-    underground: new Audio('sounds/underground_bgm.ogg'),
+    overworld: createAudioWithFallback([
+      { src: (AUDIO_DATA && AUDIO_DATA.overworld) || '', type: 'audio/mpeg' },
+      { src: 'sounds/aboveground_bgm.ogg', type: 'audio/ogg' }
+    ]),
+    underground: createAudioWithFallback([
+      { src: (AUDIO_DATA && AUDIO_DATA.underground) || '', type: 'audio/mpeg' },
+      { src: 'sounds/underground_bgm.ogg', type: 'audio/ogg' }
+    ]),
     clear: new Audio('sounds/stage_clear.wav'),
     death: new Audio('sounds/mariodie.wav')
   };
@@ -160,6 +180,9 @@ function init() {
     stomp: new Audio('sounds/stomp.wav')
   };
   Mario.oneone();
+  score = 0;
+  gameTime = 0;
+  updateScoreDisplay();
   lastTime = Date.now();
   main();
 }
@@ -185,7 +208,6 @@ function update(dt) {
   updateEntities(dt, gameTime);
 
   checkCollisions();
-  updateScore(dt);
 }
 
 function handleInput(dt) {
@@ -251,22 +273,15 @@ function updateEntities(dt, gameTime) {
   });
 }
 
-function updateScore(dt) {
-  var distanceScore = Math.max(0, Math.floor(player.pos[0]));
-  var timeScore = Math.floor(gameTime * 10);
-  var coinScore = player.coins * 100;
-  var currentScore = distanceScore + timeScore + coinScore;
-
-  if (currentScore > score) {
-    score = currentScore;
-    if (score > highScore) {
-      highScore = score;
-      try {
-        window.localStorage.setItem('marioHighScore', highScore);
-      } catch (e) {}
-    }
-    updateScoreDisplay();
+function addScore(points) {
+  score += points;
+  if (score > highScore) {
+    highScore = score;
+    try {
+      window.localStorage.setItem('marioHighScore', highScore);
+    } catch (e) {}
   }
+  updateScoreDisplay();
 }
 
 function updateScoreDisplay() {

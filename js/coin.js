@@ -9,6 +9,7 @@
       hitbox: [0,0,16,16]
     });
     this.idx = level.items.length
+    this.collected = false;
   }
 
   Mario.Util.inherits(Coin, Mario.Entity);
@@ -39,9 +40,12 @@
   }
 
   Coin.prototype.collect = function() {
+    if (this.collected) return;
+    this.collected = true;
     sounds.coin.currentTime = 0.05;
     sounds.coin.play();
     player.coins += 1;
+    addScore(10);
     delete level.items[this.idx]
   }
 })();

@@ -13,6 +13,7 @@
     });
     this.vel[0] = -0.5;
     this.idx = level.enemies.length;
+    this.scored = false;
   };
 
   Goomba.prototype.render = function(ctx, vX, vY) {
@@ -110,8 +111,11 @@
   };
 
   Goomba.prototype.stomp = function() {
+    if (this.scored) return;
+    this.scored = true;
     sounds.stomp.play();
     player.bounce = true;
+    addScore(100);
     this.sprite.pos[0] = 32;
     this.sprite.speed = 0;
     this.vel[0] = 0;
@@ -119,7 +123,10 @@
   };
 
   Goomba.prototype.bump = function() {
+    if (this.scored) return;
+    this.scored = true;
     sounds.kick.play();
+    addScore(100);
     this.sprite.img = 'sprites/enemyr.png';
     this.flipping = true;
     this.pos[1] -= 1;

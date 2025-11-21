@@ -8,6 +8,8 @@
       sprite: level.bcoinSprite(),
       hitbox: [0,0,16,16]
     });
+    this.active = false;
+    this.scored = false;
   }
 
   Mario.Util.inherits(Bcoin, Mario.Entity);
@@ -21,6 +23,7 @@
     this.idx = level.items.length;
     level.items.push(this);
     this.active = true;
+    this.scored = false;
     this.vel = -12;
     this.targetpos = this.pos[1] - 32;
   }
@@ -29,7 +32,10 @@
     if (!this.active) return;
 
     if (this.vel > 0 && this.pos[1] >= this.targetpos) {
+      if (this.scored) return;
+      this.scored = true;
       player.coins += 1;
+      addScore(10);
       //spawn a score thingy.
       delete level.items[this.idx];
     }
