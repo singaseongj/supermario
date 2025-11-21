@@ -16,6 +16,10 @@ var updateables = [];
 var fireballs = [];
 var player = new Mario.Player([0,0]);
 var controlButtons = [];
+var score = 0;
+var highScore = 0;
+var scoreValueEl;
+var highScoreValueEl;
 
 //we might have to get the size and calculate the scaling
 //but this method should let us make it however big.
@@ -27,6 +31,7 @@ canvas.height = 720;
 ctx.scale(3,3);
 document.body.appendChild(canvas);
 createControls();
+createHUD();
 
 function createControlButton(text, className, key) {
   var button = document.createElement('button');
@@ -66,6 +71,48 @@ function createControls() {
   container.appendChild(joystick);
   container.appendChild(jump);
   document.body.appendChild(container);
+
+  if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+    document.body.classList.add('touch-enabled');
+    container.style.opacity = 1;
+    container.style.visibility = 'visible';
+  }
+}
+
+function createHUD() {
+  var hud = document.createElement('div');
+  hud.className = 'hud';
+
+  var scoreContainer = document.createElement('div');
+  var scoreLabel = document.createElement('div');
+  scoreLabel.className = 'label';
+  scoreLabel.textContent = 'Score';
+  scoreValueEl = document.createElement('div');
+  scoreValueEl.className = 'value';
+  scoreValueEl.textContent = '0';
+  scoreContainer.appendChild(scoreLabel);
+  scoreContainer.appendChild(scoreValueEl);
+
+  var highContainer = document.createElement('div');
+  var highLabel = document.createElement('div');
+  highLabel.className = 'label';
+  highLabel.textContent = 'High Score';
+  highScoreValueEl = document.createElement('div');
+  highScoreValueEl.className = 'value';
+  highScoreValueEl.textContent = '0';
+  highContainer.appendChild(highLabel);
+  highContainer.appendChild(highScoreValueEl);
+
+  hud.appendChild(scoreContainer);
+  hud.appendChild(highContainer);
+  document.body.appendChild(hud);
+
+  try {
+    highScore = parseInt(window.localStorage.getItem('marioHighScore')) || 0;
+  } catch (e) {
+    highScore = 0;
+  }
+  updateScoreDisplay();
 }
 
 //viewport
@@ -138,6 +185,7 @@ function update(dt) {
   updateEntities(dt, gameTime);
 
   checkCollisions();
+  updateScore(dt);
 }
 
 function handleInput(dt) {
@@ -201,6 +249,29 @@ function updateEntities(dt, gameTime) {
   level.pipes.forEach (function(pipe) {
     pipe.update(dt);
   });
+}
+
+function updateScore(dt) {
+  var distanceScore = Math.max(0, Math.floor(player.pos[0]));
+  var timeScore = Math.floor(gameTime * 10);
+  var coinScore = player.coins * 100;
+  var currentScore = distanceScore + timeScore + coinScore;
+
+  if (currentScore > score) {
+    score = currentScore;
+    if (score > highScore) {
+      highScore = score;
+      try {
+        window.localStorage.setItem('marioHighScore', highScore);
+      } catch (e) {}
+    }
+    updateScoreDisplay();
+  }
+}
+
+function updateScoreDisplay() {
+  if (scoreValueEl) scoreValueEl.textContent = score;
+  if (highScoreValueEl) highScoreValueEl.textContent = highScore;
 }
 
 //scan for collisions
