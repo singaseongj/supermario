@@ -5,6 +5,7 @@
   var Koopa = Mario.Koopa = function(pos, sprite, para) {
     this.dying = false;
     this.shell = false;
+    this.scored = false;
 
     this.para = para; //para. As in, is it a paratroopa?
 
@@ -178,7 +179,10 @@
 
   Koopa.prototype.stomp = function() {
     //Turn this thing into a shell if it isn't already. Kick it if it is.
+    if (this.scored) return;
+    this.scored = true;
     player.bounce = true;
+    addScore(100);
     if (this.para) {
       this.para = false;
       this.sprite.pos[0] -= 32;
@@ -198,7 +202,10 @@
   };
 
   Koopa.prototype.bump = function() {
+    if (this.scored) return;
+    this.scored = true;
     sounds.kick.play();
+    addScore(100);
     if (this.flipping) return;
     this.flipping = true;
     this.sprite.pos = [160, 0];
