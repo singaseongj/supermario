@@ -30,3 +30,47 @@ html {
   top: 0;
   left: 0;
 }
+
+.touch-controls {
+  position: fixed;
+  bottom: 16px;
+  left: 16px;
+  right: 16px;
+  pointer-events: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.touch-joystick {
+  display: flex;
+  gap: 12px;
+  pointer-events: auto;
+}
+
+.touch-jump {
+  pointer-events: auto;
+}
+
+.touch-button {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  background: rgba(0, 0, 0, 0.3);
+  color: #fff;
+  font-size: 24px;
+  opacity: 0.7;
+  touch-action: none;
+}
+
+.touch-button:active {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.touch-button.left::after,
+.touch-button.right::after,
+.touch-button.jump::after {
+  content: '';
+}

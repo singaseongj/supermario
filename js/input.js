@@ -43,6 +43,9 @@
         isDown: function(key) {
             return pressedKeys[key.toUpperCase()];
         },
+        setKeyStatus: function(key, status) {
+            pressedKeys[key.toUpperCase()] = status;
+        },
         reset: function() {
           pressedKeys['RUN'] = false;
           pressedKeys['LEFT'] = false;

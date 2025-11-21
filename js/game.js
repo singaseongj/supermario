@@ -15,6 +15,7 @@ var ctx = canvas.getContext('2d');
 var updateables = [];
 var fireballs = [];
 var player = new Mario.Player([0,0]);
+var controlButtons = [];
 
 //we might have to get the size and calculate the scaling
 //but this method should let us make it however big.
@@ -25,6 +26,47 @@ canvas.width = 762;
 canvas.height = 720;
 ctx.scale(3,3);
 document.body.appendChild(canvas);
+createControls();
+
+function createControlButton(text, className, key) {
+  var button = document.createElement('button');
+  button.className = className;
+  button.textContent = text;
+  var start = function(e) {
+    e.preventDefault();
+    input.setKeyStatus(key, true);
+  };
+  var end = function(e) {
+    e.preventDefault();
+    input.setKeyStatus(key, false);
+  };
+  ['touchstart', 'mousedown'].forEach(function(evt) {
+    button.addEventListener(evt, start);
+  });
+  ['touchend', 'touchcancel', 'mouseup', 'mouseleave'].forEach(function(evt) {
+    button.addEventListener(evt, end);
+  });
+  controlButtons.push(button);
+  return button;
+}
+
+function createControls() {
+  var container = document.createElement('div');
+  container.className = 'touch-controls';
+
+  var joystick = document.createElement('div');
+  joystick.className = 'touch-joystick';
+  joystick.appendChild(createControlButton('\u25C0', 'touch-button left', 'LEFT'));
+  joystick.appendChild(createControlButton('\u25B6', 'touch-button right', 'RIGHT'));
+
+  var jump = document.createElement('div');
+  jump.className = 'touch-jump';
+  jump.appendChild(createControlButton('A', 'touch-button jump', 'JUMP'));
+
+  container.appendChild(joystick);
+  container.appendChild(jump);
+  document.body.appendChild(container);
+}
 
 //viewport
 var vX = 0,
